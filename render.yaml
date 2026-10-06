@@ -1,0 +1,15 @@
+# Render Blueprint for the ApplyFlow frontend (static site).
+# /api/* is proxied to the backend so the browser sees one origin (session + CSRF cookies just work).
+services:
+  - type: web
+    name: applyflow-frontend
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://email-backend-0rid.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html

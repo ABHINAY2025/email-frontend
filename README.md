@@ -15,11 +15,18 @@ Recharts, date-fns, React Hook Form + Zod, cmdk, dnd-kit. Real-time updates via 
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173, proxies /api → http://localhost:8080 (the backend)
+npm run dev      # http://localhost:5173, proxies /api → the deployed backend
 npm run build    # type-check + production build into dist/
 ```
 
-Start the backend first (`./mvnw spring-boot:run` in the backend repo), then log in with the backend's
-`APP_USERNAME` / `APP_PASSWORD`.
+The app always calls `/api/...` on its own origin; something in front of it forwards that to the backend:
+
+- **Dev (`npm run dev`)**: the Vite proxy forwards to `https://email-backend-0rid.onrender.com`. To use a local
+  backend instead, create `frontend/.env.local` with `VITE_API_TARGET=http://localhost:8080`.
+- **Production**: [render.yaml](render.yaml) deploys `dist/` as a Render static site and rewrites `/api/*` to the
+  backend, so session and CSRF cookies stay first-party.
+
+Log in with the backend's `APP_USERNAME` / `APP_PASSWORD`. The free Render backend sleeps when idle, so the first
+request after a while can take ~30-60 s.
 
 The REST/SSE contract shared with the backend is in [docs/API_CONTRACT.md](docs/API_CONTRACT.md).

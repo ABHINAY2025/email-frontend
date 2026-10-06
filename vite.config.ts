@@ -1,8 +1,13 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
-export default defineConfig({
+/** Deployed backend on Render. Override with VITE_API_TARGET (e.g. http://localhost:8080) in frontend/.env.local. */
+const DEFAULT_API_TARGET = 'https://email-backend-0rid.onrender.com';
+
+export default defineConfig(({ mode }) => {
+  const apiTarget = loadEnv(mode, process.cwd(), '').VITE_API_TARGET || DEFAULT_API_TARGET;
+  return {
   plugins: [react()],
   resolve: {
     alias: { '@': path.resolve(__dirname, 'src') },
@@ -12,7 +17,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: apiTarget,
         changeOrigin: true,
         // SSE-friendly: no proxy timeout, keep the stream unbuffered
         timeout: 0,
@@ -48,4 +53,5 @@ export default defineConfig({
       },
     },
   },
+};
 });
