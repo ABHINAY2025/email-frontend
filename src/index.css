@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 228 7% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 228 7% 10%;
+    --elevated: 220 14% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 7% 10%;
+    --sidebar: 220 14% 97.5%;
+    --sidebar-foreground: 225 6% 32%;
+    --sidebar-accent: 225 12% 92%;
+    --sidebar-border: 228 8% 90%;
+    --primary: 234 50% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 14% 95.5%;
+    --secondary-foreground: 228 7% 14%;
+    --muted: 225 14% 96%;
+    --muted-foreground: 225 6% 44%;
+    --subtle: 225 6% 62%;
+    --accent: 225 14% 94.5%;
+    --accent-foreground: 228 7% 10%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 228 8% 90.5%;
+    --input: 228 8% 86%;
+    --ring: 234 50% 55%;
+
+    /* Semantic hues (badges, avatars, calendar). Chart hexes live in lib/chart-colors.ts */
+    --hue-slate: 215 22% 44%;
+    --hue-blue: 213 70% 47%;
+    --hue-violet: 258 52% 55%;
+    --hue-teal: 180 62% 32%;
+    --hue-amber: 34 88% 40%;
+    --hue-green: 148 58% 32%;
+    --hue-red: 0 60% 49%;
+    --hue-gray: 220 6% 50%;
+    --hue-indigo: 234 50% 55%;
+    --hue-pink: 330 58% 50%;
+    --hue-orange: 20 80% 48%;
+    --monogram-l: 40%;
+  }
+
+  .dark {
+    --background: 220 10% 6%;
+    --foreground: 220 6% 91.5%;
+    --card: 225 9% 8.5%;
+    --card-foreground: 220 6% 91.5%;
+    --elevated: 228 9% 11%;
+    --popover: 228 9% 10.5%;
+    --popover-foreground: 220 6% 91.5%;
+    --sidebar: 225 12% 4.8%;
+    --sidebar-foreground: 222 6% 64%;
+    --sidebar-accent: 225 8% 12%;
+    --sidebar-border: 225 8% 12.5%;
+    --primary: 234 56% 64%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 228 8% 13%;
+    --secondary-foreground: 220 6% 91.5%;
+    --muted: 228 8% 12%;
+    --muted-foreground: 222 6% 57%;
+    --subtle: 222 5% 40%;
+    --accent: 228 8% 13.5%;
+    --accent-foreground: 220 6% 93%;
+    --destructive: 0 62% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 223 8% 15.5%;
+    --input: 223 8% 19.5%;
+    --ring: 234 56% 64%;
+
+    --hue-slate: 215 22% 66%;
+    --hue-blue: 213 78% 64%;
+    --hue-violet: 258 70% 72%;
+    --hue-teal: 178 52% 52%;
+    --hue-amber: 38 85% 58%;
+    --hue-green: 148 48% 52%;
+    --hue-red: 0 68% 66%;
+    --hue-gray: 220 6% 58%;
+    --hue-indigo: 234 56% 68%;
+    --hue-pink: 330 62% 68%;
+    --hue-orange: 22 80% 60%;
+    --monogram-l: 74%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-sm text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--input)) transparent;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .label-caps {
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: hsl(var(--muted-foreground));
+  }
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:ring-offset-background;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* cmdk group headings */
+[cmdk-group-heading] {
+  padding: 8px 8px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: hsl(var(--muted-foreground));
+}
