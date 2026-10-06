@@ -38,13 +38,38 @@ export interface Page<T> {
 }
 
 export interface CurrentUser {
+  /** For self-registered users this is their email. */
   username: string;
   displayName: string;
+  /** null only for the env-bootstrapped admin; may be missing on older backends. */
+  email?: string | null;
 }
 
 export interface LoginRequest {
+  /** Email (case-insensitive) or username. */
   username: string;
   password: string;
+}
+
+// ---------------------------------------------------------------- 16. Accounts & onboarding
+export interface RegisterRequest {
+  displayName: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthConfig {
+  registrationEnabled: boolean;
+}
+
+export interface OnboardingStatus {
+  hasEmailAccount: boolean;
+  firstSyncCompleted: boolean;
+  syncInProgress: boolean;
+  hasApplications: boolean;
+  dismissed: boolean;
+  /** hasEmailAccount && firstSyncCompleted */
+  completed: boolean;
 }
 
 // ---------------------------------------------------------------- 1. Enums

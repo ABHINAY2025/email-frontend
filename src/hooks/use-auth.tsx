@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { authApi } from '@/api/auth';
 import { ApiClientError, primeCsrf, setUnauthorizedHandler } from '@/lib/api';
 import { qk } from '@/lib/query-keys';
-import type { CurrentUser, LoginRequest } from '@/types/api';
+import { clearOnboardingSessionFlags } from '@/lib/onboarding';
+import type { CurrentUser, LoginRequest, RegisterRequest } from '@/types/api';
 
 interface AuthContextValue {
   user: CurrentUser | null;
@@ -12,6 +13,8 @@ interface AuthContextValue {
   /** Set when the auth probe failed for a reason other than 401 (e.g. backend down). */
   probeError: Error | null;
   login: (body: LoginRequest) => Promise<CurrentUser>;
+  /** Creates the account; the backend also signs the new user in. */
+  register: (body: RegisterRequest) => Promise<CurrentUser>;
   logout: () => Promise<void>;
   retry: () => void;
 }
@@ -44,7 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (qc.getQueryData(qk.me) === null) return;
       qc.setQueryData(qk.me, null);
       qc.removeQueries({ predicate: (q) => q.queryKey[0] !== 'auth' });
-      if (!window.location.pathname.startsWith('/login')) {
+      const path = window.location.pathname;
+      if (!path.startsWith('/login') && !path.startsWith('/register')) {
         const from = window.location.pathname + window.location.search;
         navigate(`/login?from=${encodeURIComponent(from)}`, { replace: true });
       }
@@ -52,16 +56,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => setUnauthorizedHandler(null);
   }, [qc, navigate]);
 
-  const login = useCallback(
-    async (body: LoginRequest) => {
-      await primeCsrf();
-      const user = await authApi.login(body);
-      // Session id rotates on login → refresh the CSRF cookie.
+  /** Session id rotates on login/register → refresh CSRF and drop any data cached for a previous user. */
+  const startSession = useCallback(
+    async (user: CurrentUser) => {
       await primeCsrf(true);
+      qc.removeQueries({ predicate: (q) => q.queryKey[0] !== 'auth' });
+      clearOnboardingSessionFlags();
       qc.setQueryData(qk.me, user);
       return user;
     },
     [qc],
+  );
+
+  const login = useCallback(
+    async (body: LoginRequest) => {
+      await primeCsrf();
+      return startSession(await authApi.login(body));
+    },
+    [startSession],
+  );
+
+  const register = useCallback(
+    async (body: RegisterRequest) => {
+      await primeCsrf();
+      return startSession(await authApi.register(body));
+    },
+    [startSession],
   );
 
   const logout = useCallback(async () => {
@@ -72,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     qc.setQueryData(qk.me, null);
     qc.removeQueries({ predicate: (q) => q.queryKey[0] !== 'auth' });
+    clearOnboardingSessionFlags();
     await primeCsrf(true);
     navigate('/login', { replace: true });
   }, [qc, navigate]);
@@ -83,10 +104,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: meQuery.isLoading,
       probeError: meQuery.isError ? (meQuery.error as Error) : null,
       login,
+      register,
       logout,
       retry: () => void meQuery.refetch(),
     }),
-    [meQuery.data, meQuery.isLoading, meQuery.isError, meQuery.error, login, logout, meQuery],
+    [meQuery.data, meQuery.isLoading, meQuery.isError, meQuery.error, login, register, logout, meQuery],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

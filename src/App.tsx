@@ -5,6 +5,9 @@ import { PageSkeleton } from '@/components/layout/page';
 import { FullScreenLoader, BackendUnavailable } from '@/components/layout/boot';
 import { useAuth } from '@/hooks/use-auth';
 import LoginPage from '@/pages/login';
+import RegisterPage from '@/pages/register';
+import WelcomePage from '@/pages/welcome';
+import { OnboardingGate } from '@/components/onboarding/onboarding-gate';
 import DashboardPage from '@/pages/dashboard';
 import ApplicationsPage from '@/pages/applications';
 import ApplicationDetailPage from '@/pages/application-detail';
@@ -41,10 +44,19 @@ export function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route element={<RequireAuth />}>
         <Route element={<AppShell />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
+          <Route
+            path="dashboard"
+            element={
+              <OnboardingGate>
+                <DashboardPage />
+              </OnboardingGate>
+            }
+          />
+          <Route path="welcome" element={<WelcomePage />} />
           <Route path="applications" element={<ApplicationsPage />} />
           <Route path="applications/:id" element={<ApplicationDetailPage />} />
           <Route path="inbox" element={<InboxPage />} />

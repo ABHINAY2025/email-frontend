@@ -76,6 +76,7 @@ export function useStartSync() {
     onSuccess: (res) => {
       void qc.invalidateQueries({ queryKey: qk.sync.status });
       void qc.invalidateQueries({ queryKey: qk.emailAccounts.all });
+      void qc.invalidateQueries({ queryKey: qk.onboarding });
       if (res?.started === 0) toast.message('Nothing to sync', { description: 'No enabled mail accounts are ready to sync.' });
       else toast.success('Sync started', { description: res ? `Syncing ${res.started} account${res.started === 1 ? '' : 's'}…` : undefined });
     },
@@ -94,6 +95,7 @@ function useAccountsRefresh() {
   return () => {
     void qc.invalidateQueries({ queryKey: qk.emailAccounts.all });
     void qc.invalidateQueries({ queryKey: qk.sync.status });
+    void qc.invalidateQueries({ queryKey: qk.onboarding });
   };
 }
 

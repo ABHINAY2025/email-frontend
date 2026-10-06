@@ -3,6 +3,9 @@ import type { ApplicationQuery, InboxQuery } from '@/types/api';
 /** Centralized TanStack Query keys. Prefix arrays allow broad invalidation. */
 export const qk = {
   me: ['auth', 'me'] as const,
+  /** Public; kept across logout (prefix 'auth'). */
+  authConfig: ['auth', 'config'] as const,
+  onboarding: ['onboarding'] as const,
   health: ['health'] as const,
 
   applications: {

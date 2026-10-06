@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Inbox as InboxIcon, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -169,7 +169,24 @@ export default function InboxPage() {
               q ? (
                 <EmptyState compact icon={Search} title={`No emails match “${q}”`} actions={<Button variant="outline" size="sm" onClick={() => setSearch('')}>Clear search</Button>} />
               ) : (
-                <EmptyState compact icon={InboxIcon} title={EMPTY_COPY[tab].title} description={EMPTY_COPY[tab].description} />
+                <EmptyState
+                  compact
+                  icon={InboxIcon}
+                  title={EMPTY_COPY[tab].title}
+                  description={EMPTY_COPY[tab].description}
+                  actions={
+                    tab === 'all' ? (
+                      <>
+                        <Button size="sm" asChild>
+                          <Link to="/settings/email-accounts">Connect Email</Link>
+                        </Button>
+                        <Button size="sm" variant="outline" asChild>
+                          <Link to="/welcome">Setup guide</Link>
+                        </Button>
+                      </>
+                    ) : undefined
+                  }
+                />
               )
             ) : (
               <>

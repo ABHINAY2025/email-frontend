@@ -45,6 +45,7 @@ export function useServerEvents(enabled = true) {
       calendar: qk.calendar.all,
       analytics: qk.analytics.all,
       companies: qk.companies.all,
+      onboarding: qk.onboarding,
     };
     const invalidate = (...groups: string[]) => {
       groups.forEach((g) => pending.add(g));
@@ -65,6 +66,7 @@ export function useServerEvents(enabled = true) {
           const app = ev.payload as ApplicationSummary;
           if (app?.id) void qc.invalidateQueries({ queryKey: qk.applications.detail(app.id) });
           invalidate('applications', 'dashboard', 'calendar', 'analytics', 'companies');
+          if (ev.type === 'APPLICATION_CREATED') invalidate('onboarding');
           break;
         }
         case 'STATUS_CHANGED': {
@@ -76,11 +78,11 @@ export function useServerEvents(enabled = true) {
         case 'EMAIL_RECEIVED': {
           const email = ev.payload as InboxItem;
           if (email?.applicationId) void qc.invalidateQueries({ queryKey: qk.applications.detail(email.applicationId) });
-          invalidate('inbox', 'dashboard', 'applications', 'companies');
+          invalidate('inbox', 'dashboard', 'applications', 'companies', 'onboarding');
           break;
         }
         case 'SYNC_STARTED':
-          invalidate('sync', 'accounts');
+          invalidate('sync', 'accounts', 'onboarding');
           break;
         case 'SYNC_COMPLETED': {
           const job = ev.payload as SyncJob;
@@ -97,7 +99,7 @@ export function useServerEvents(enabled = true) {
         }
         case 'SYNC_FAILED': {
           const job = ev.payload as SyncJob;
-          invalidate('sync', 'accounts', 'notifications');
+          invalidate('sync', 'accounts', 'notifications', 'onboarding');
           toast.error('Sync failed', {
             description: job?.error ? `${job.emailAccountEmail}: ${job.error}` : job?.emailAccountEmail,
             action: { label: 'View details', onClick: () => navRef.current('/settings/email-accounts') },

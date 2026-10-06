@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { ChevronRight, LogOut, Menu, Moon, RefreshCw, Search, Settings, Sun, UserRound } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ChevronRight, ListChecks, LogOut, Menu, Moon, RefreshCw, Search, Settings, Sun, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ import { Kbd } from '@/components/ui/kbd';
 import { Tooltip } from '@/components/ui/tooltip';
 import { useAppUI } from '@/hooks/use-app-ui';
 import { useAuth } from '@/hooks/use-auth';
+import { useResetOnboarding } from '@/hooks/use-onboarding';
 import { useStartSync, useSyncStatus } from '@/hooks/use-queries';
 import { useApplication } from '@/hooks/use-applications';
 import { useCompany } from '@/hooks/use-queries';
@@ -35,6 +36,7 @@ const SECTION_TITLES: Record<string, string> = {
   companies: 'Companies',
   analytics: 'Analytics',
   settings: 'Settings',
+  welcome: 'Setup guide',
 };
 
 function useBreadcrumbs(): { label: string; to?: string }[] {
@@ -140,7 +142,10 @@ function ThemeToggle() {
 function ProfileMenu() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
+  const resetOnboarding = useResetOnboarding();
   const name = user?.displayName || user?.username || 'User';
+  const secondary = user?.email || (user?.username ? `@${user.username}` : '');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -152,10 +157,10 @@ function ProfileMenu() {
           {initials(name)}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-60">
         <div className="px-2 py-1.5">
           <p className="truncate text-[13px] font-medium">{name}</p>
-          <p className="truncate text-xs text-muted-foreground">@{user?.username}</p>
+          {secondary && <p className="truncate text-xs text-muted-foreground">{secondary}</p>}
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -167,6 +172,14 @@ function ProfileMenu() {
           <Link to="/settings/email-accounts">
             <UserRound /> Email accounts
           </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => {
+            resetOnboarding.mutate();
+            navigate('/welcome');
+          }}
+        >
+          <ListChecks /> Setup guide
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>

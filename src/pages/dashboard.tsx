@@ -19,6 +19,7 @@ import { ActivityStream } from '@/components/dashboard/activity-stream';
 import { AttentionList } from '@/components/dashboard/attention-list';
 import { PipelineBar } from '@/components/dashboard/pipeline';
 import { Page } from '@/components/layout/page';
+import { GettingStartedCard } from '@/components/onboarding/getting-started-card';
 import { useAppUI } from '@/hooks/use-app-ui';
 import { useApplications } from '@/hooks/use-applications';
 import { useAuth } from '@/hooks/use-auth';
@@ -62,6 +63,8 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
+
+      <GettingStartedCard className="mb-4" />
 
       {summary.isError ? (
         <Card className="mb-4">
